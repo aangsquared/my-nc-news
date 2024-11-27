@@ -5,6 +5,7 @@ const {
   getApi,
   getTopics,
   getArticleByID,
+  getArticles,
 } = require("./controllers/api.controller")
 
 // error handlers
@@ -19,6 +20,11 @@ app.use(express.json())
 app.get("/api", getApi)
 app.get("/api/topics", getTopics)
 app.get("/api/articles/:article_id", getArticleByID)
+app.get("/api/articles", getArticles)
+
+app.all("*", (req, res) => {
+  res.status(404).send({ msg: "404: Route not found" })
+})
 
 app.use(psqlErrorHandler)
 app.use(customErrorHandler)

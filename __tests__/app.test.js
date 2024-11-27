@@ -3,6 +3,7 @@ const endpointsJson = require("../endpoints.json")
 // app and request
 const app = require("../app")
 const request = require("supertest")
+require("jest-sorted")
 // data and seed for seeding test database before each test
 const testData = require("../db/data/test-data")
 const seed = require("../db/seeds/seed")
@@ -78,6 +79,55 @@ describe("GET /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("400: Bad request")
+      })
+  })
+})
+
+describe("GET /api/articles", () => {
+  const expectedObject = {
+    author: expect.any(String),
+    title: expect.any(String),
+    article_id: expect.any(Number),
+    topic: expect.any(String),
+    created_at: expect.any(String),
+    votes: expect.any(Number),
+    article_img_url: expect.any(String),
+    comment_count: expect.any(Number),
+  }
+  test("200: Responds with an array of article objects where the body", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeInstanceOf(Array)
+        expect(articles).toHaveLength(13)
+        articles.forEach((article) => {
+          expect(article).toEqual(expect.objectContaining(expectedObject))
+          expect(article.body).toBe(undefined)
+        })
+      })
+  })
+  test("200: responds with array of article objects in descending order by date", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeInstanceOf(Array)
+        expect(articles).toHaveLength(13)
+        articles.forEach((article) => {
+          expect(article).toEqual(expect.objectContaining(expectedObject))
+          expect(articles).toBeSortedBy("created_at", {
+            descending: true,
+          })
+        })
+      })
+  })
+  test("404: responds with a message 'Route not found' if given an invalid endpoint", () => {
+    return request(app)
+      .get("/api/error-right?")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("404: Route not found")
       })
   })
 })
