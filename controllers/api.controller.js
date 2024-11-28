@@ -3,6 +3,7 @@ const {
   fetchTopics,
   fetchArticleById,
   fetchAllArticles,
+  fetchArticleComments,
 } = require("../models/api.model")
 
 function getApi(req, res) {
@@ -39,4 +40,23 @@ function getArticles(req, res, next) {
     .catch(next)
 }
 
-module.exports = { getApi, getTopics, getArticleByID, getArticles }
+function getArticleComments(req, res, next) {
+  const { article_id } = req.params
+
+  fetchArticleComments(article_id)
+    .then((comments) => {
+      if (!comments.length) {
+        res.status(404).send({ msg: "No comments for this article" })
+      }
+      res.status(200).send({ comments })
+    })
+    .catch(next)
+}
+
+module.exports = {
+  getApi,
+  getTopics,
+  getArticleByID,
+  getArticles,
+  getArticleComments,
+}

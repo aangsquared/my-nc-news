@@ -32,7 +32,7 @@ function fetchAllArticles() {
     GROUP BY articles.article_id
     ORDER BY articles.created_at DESC;`
   return db.query(queryString).then(({ rows }) => {
-    console.log(rows)
+    //console.log(rows)
     return rows.map((article) => ({
       ...article,
       comment_count: Number(article.comment_count),
@@ -40,4 +40,22 @@ function fetchAllArticles() {
   })
 }
 
-module.exports = { fetchTopics, fetchArticleById, fetchAllArticles }
+function fetchArticleComments(article_id) {
+  const queryString = `
+    SELECT comment_id, votes, created_at, author, body, article_id
+    FROM comments
+    WHERE article_id = $1
+    ORDER BY created_at DESC;
+  `
+
+  return db.query(queryString, [article_id]).then(({ rows }) => {
+    return rows
+  })
+}
+
+module.exports = {
+  fetchTopics,
+  fetchArticleById,
+  fetchAllArticles,
+  fetchArticleComments,
+}

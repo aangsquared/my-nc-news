@@ -131,3 +131,44 @@ describe("GET /api/articles", () => {
       })
   })
 })
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: responds with an array of comments for the given article_id, sorted by most recent first", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toBeInstanceOf(Array)
+        expect(comments).toHaveLength(11)
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: 1,
+            })
+          )
+        })
+        expect(comments).toBeSortedBy("created_at", { descending: true })
+      })
+  })
+  test("404: responds with 'No comments for this article' if article has no comments", () => {
+    return request(app)
+      .get("/api/articles/11111111/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No comments for this article")
+      })
+  })
+  test("400: responds with 'Bad request' for invalid article_id format", () => {
+    return request(app)
+      .get("/api/articles/NaN/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400: Bad request")
+      })
+  })
+})
