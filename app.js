@@ -6,6 +6,7 @@ const {
   getTopics,
   getArticleByID,
   getArticles,
+  getArticleComments,
 } = require("./controllers/api.controller")
 
 // error handlers
@@ -21,6 +22,7 @@ app.get("/api", getApi)
 app.get("/api/topics", getTopics)
 app.get("/api/articles/:article_id", getArticleByID)
 app.get("/api/articles", getArticles)
+app.get("/api/articles/:article_id/comments", getArticleComments)
 
 app.all("*", (req, res) => {
   res.status(404).send({ msg: "404: Route not found" })
