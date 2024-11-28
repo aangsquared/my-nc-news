@@ -62,10 +62,31 @@ function insertArticleComment(article_id, username, body) {
     })
 }
 
+function updateArticleVotes(article_id, inc_votes) {
+  if (!Number.isInteger(parseInt(article_id)) || !Number.isInteger(inc_votes)) {
+    return Promise.reject({ status: 400, msg: "400: Bad request" })
+  }
+
+  const queryStr = `
+      UPDATE articles
+      SET votes = votes + $1
+      WHERE article_id = $2
+      RETURNING *;
+    `
+
+  return db.query(queryStr, [inc_votes, article_id]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "Article not found" })
+    }
+    return rows[0]
+  })
+}
+
 module.exports = {
   fetchTopics,
   fetchArticleById,
   fetchAllArticles,
   fetchArticleComments,
   insertArticleComment,
+  updateArticleVotes,
 }

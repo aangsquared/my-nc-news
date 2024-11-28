@@ -8,6 +8,7 @@ const {
   getArticles,
   getArticleComments,
   postArticleComment,
+  patchArticleVotes,
 } = require("./controllers/api.controller")
 
 // ERROR HANDLER IMPORT
@@ -30,6 +31,10 @@ app.get("/api/articles/:article_id/comments", getArticleComments)
 //POST
 
 app.post("/api/articles/:article_id/comments", postArticleComment)
+
+// PATCH
+
+app.patch("/api/articles/:article_id", patchArticleVotes)
 
 // ERROR HANDLERS
 

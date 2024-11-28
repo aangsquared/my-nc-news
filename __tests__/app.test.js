@@ -251,3 +251,77 @@ describe("POST /api/articles/:article_id/comments", () => {
       })
   })
 })
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: increments the votes and responds with updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toEqual(
+          expect.objectContaining({
+            article_id: 1,
+            votes: expect.any(Number),
+            title: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            article_img_url: expect.any(String),
+          })
+        )
+        expect(body.article.votes).toBe(101)
+      })
+  })
+
+  test("200: decrements votes and responds with the updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -5 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article.votes).toBe(95)
+      })
+  })
+
+  test("400: responds with bad request when inc_votes is missing", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400: Bad request")
+      })
+  })
+
+  test("400: responds with bad request when inc_votes is not an integer", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "five" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400: Bad request")
+      })
+  })
+
+  test("404: responds with not found when article_id does not exist", () => {
+    return request(app)
+      .patch("/api/articles/1111111")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found")
+      })
+  })
+
+  test("400: responds with bad request for invalid article_id", () => {
+    return request(app)
+      .patch("/api/articles/NaN")
+      .send({ inc_votes: 1 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400: Bad request")
+      })
+  })
+})
