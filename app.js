@@ -3,6 +3,7 @@ const app = express()
 
 const {
   getApi,
+  getUsers,
   getTopics,
   getArticleByID,
   getArticles,
@@ -24,9 +25,10 @@ app.use(express.json())
 //GET
 
 app.get("/api", getApi)
+app.get("/api/users", getUsers)
 app.get("/api/topics", getTopics)
-app.get("/api/articles/:article_id", getArticleByID)
 app.get("/api/articles", getArticles)
+app.get("/api/articles/:article_id", getArticleByID)
 app.get("/api/articles/:article_id/comments", getArticleComments)
 
 //POST

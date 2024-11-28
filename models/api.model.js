@@ -1,9 +1,14 @@
-const { deleteComment } = require("../controllers/api.controller")
 const db = require("../db/connection")
 const format = require("pg-format")
 
+function fetchUsers() {
+  return db.query(`SELECT * FROM users;`).then(({ rows }) => {
+    return rows
+  })
+}
+
 function fetchTopics() {
-  return db.query("SELECT * FROM topics;").then(({ rows }) => {
+  return db.query(`SELECT * FROM topics;`).then(({ rows }) => {
     return rows
   })
 }
@@ -103,6 +108,7 @@ function deleteCommentById(comment_id) {
 }
 
 module.exports = {
+  fetchUsers,
   fetchTopics,
   fetchArticleById,
   fetchAllArticles,

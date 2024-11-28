@@ -1,5 +1,6 @@
 const endpointsJson = require("../endpoints.json")
 const {
+  fetchUsers,
   fetchTopics,
   fetchArticleById,
   fetchAllArticles,
@@ -11,6 +12,13 @@ const {
 
 function getApi(req, res) {
   res.status(200).send({ endpoints: endpointsJson })
+}
+function getUsers(req, res, next) {
+  fetchUsers()
+    .then((users) => {
+      res.status(200).send({ users })
+    })
+    .catch(next)
 }
 
 function getTopics(req, res, next) {
@@ -88,6 +96,7 @@ function deleteComment(req, res, next) {
 
 module.exports = {
   getApi,
+  getUsers,
   getTopics,
   getArticleByID,
   getArticles,

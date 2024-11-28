@@ -28,6 +28,35 @@ describe("GET /api", () => {
   })
 })
 
+describe("GET /api/users", () => {
+  test("200: responds with an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(users).toBeInstanceOf(Array)
+        expect(users).toHaveLength(4)
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          )
+        })
+      })
+  })
+  test("404: responds with 'Route not found' for an invalid endpoint", () => {
+    return request(app)
+      .get("/api/unknownroute")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("404: Route not found")
+      })
+  })
+})
+
 describe("GET /api/topics", () => {
   test("200: Responds with array of topic objects", () => {
     return request(app)
