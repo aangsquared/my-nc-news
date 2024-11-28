@@ -3,7 +3,6 @@ const endpointsJson = require("../endpoints.json")
 // app and request
 const app = require("../app")
 const request = require("supertest")
-require("jest-sorted")
 // data and seed for seeding test database before each test
 const testData = require("../db/data/test-data")
 const seed = require("../db/seeds/seed")
@@ -149,6 +148,54 @@ describe("GET /api/articles", () => {
             descending: true,
           })
         })
+      })
+  })
+  test("200: responds with articles sorted by created_at in descending order by default", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { descending: true })
+      })
+  })
+  test("200: responds with articles sorted by created_at in ascending order", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { ascending: true })
+      })
+  })
+  test("200: responds with articles sorted by title in ascending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title", { ascending: true })
+      })
+  })
+  test("200: responds with articles sorted by title in descending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=desc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title", { descending: true })
+      })
+  })
+  test("400: responds with 'Invalid sort column' for invalid sort_by value", () => {
+    return request(app)
+      .get("/api/articles?sort_by=invalid_sort_by")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid sort column")
+      })
+  })
+  test("400: responds with 'Invalid order value' for invalid order", () => {
+    return request(app)
+      .get("/api/articles?order=invalid_order")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid order value")
       })
   })
   test("404: responds with a message 'Route not found' if given an invalid endpoint", () => {
