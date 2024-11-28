@@ -1,3 +1,4 @@
+const { deleteComment } = require("../controllers/api.controller")
 const db = require("../db/connection")
 const format = require("pg-format")
 
@@ -82,6 +83,25 @@ function updateArticleVotes(article_id, inc_votes) {
   })
 }
 
+function deleteCommentById(comment_id) {
+  if (!Number.isInteger(parseInt(comment_id))) {
+    return Promise.reject({ status: 400, msg: "400: Bad request" })
+  }
+
+  const queryStr = `
+      DELETE FROM comments
+      WHERE comment_id = $1
+      RETURNING *;
+    `
+
+  return db.query(queryStr, [comment_id]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "Comment not found" })
+    }
+    return
+  })
+}
+
 module.exports = {
   fetchTopics,
   fetchArticleById,
@@ -89,4 +109,5 @@ module.exports = {
   fetchArticleComments,
   insertArticleComment,
   updateArticleVotes,
+  deleteCommentById,
 }

@@ -9,6 +9,7 @@ const {
   getArticleComments,
   postArticleComment,
   patchArticleVotes,
+  deleteComment,
 } = require("./controllers/api.controller")
 
 // ERROR HANDLER IMPORT
@@ -35,6 +36,10 @@ app.post("/api/articles/:article_id/comments", postArticleComment)
 // PATCH
 
 app.patch("/api/articles/:article_id", patchArticleVotes)
+
+//DELETE
+
+app.delete("/api/comments/:comment_id", deleteComment)
 
 // ERROR HANDLERS
 
