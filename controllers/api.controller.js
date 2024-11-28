@@ -4,10 +4,10 @@ const {
   fetchArticleById,
   fetchAllArticles,
   fetchArticleComments,
+  insertArticleComment,
 } = require("../models/api.model")
 
 function getApi(req, res) {
-  //console.log(endpointsJson)
   res.status(200).send({ endpoints: endpointsJson })
 }
 
@@ -23,7 +23,6 @@ function getArticleByID(req, res, next) {
   const { article_id } = req.params
   fetchArticleById(article_id)
     .then((article) => {
-      //console.log(article)
       if (!article) {
         return res.status(404).send({ msg: "Article Not Found" })
       }
@@ -53,10 +52,22 @@ function getArticleComments(req, res, next) {
     .catch(next)
 }
 
+function postArticleComment(req, res, next) {
+  const { article_id } = req.params
+  const { username, body } = req.body
+
+  insertArticleComment(article_id, username, body)
+    .then((comment) => {
+      res.status(201).send({ comment })
+    })
+    .catch(next)
+}
+
 module.exports = {
   getApi,
   getTopics,
   getArticleByID,
   getArticles,
   getArticleComments,
+  postArticleComment,
 }

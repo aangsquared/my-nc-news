@@ -3,7 +3,6 @@ const format = require("pg-format")
 
 function fetchTopics() {
   return db.query("SELECT * FROM topics;").then(({ rows }) => {
-    //console.log(rows)
     return rows
   })
 }
@@ -11,7 +10,6 @@ function fetchTopics() {
 function fetchArticleById(article_id) {
   const queryString = `SELECT * FROM articles WHERE article_id=$1`
   return db.query(queryString, [article_id]).then(({ rows }) => {
-    //console.log(rows)
     return rows[0]
   })
 }
@@ -32,7 +30,6 @@ function fetchAllArticles() {
     GROUP BY articles.article_id
     ORDER BY articles.created_at DESC;`
   return db.query(queryString).then(({ rows }) => {
-    //console.log(rows)
     return rows.map((article) => ({
       ...article,
       comment_count: Number(article.comment_count),
@@ -53,9 +50,22 @@ function fetchArticleComments(article_id) {
   })
 }
 
+function insertArticleComment(article_id, username, body) {
+  const queryString = `INSERT INTO comments (article_id, author, body)
+    VALUES ($1, $2, $3)
+    RETURNING *;`
+  return db
+    .query(queryString, [article_id, username, body])
+    .then(({ rows }) => {
+      console.log(rows)
+      return rows[0]
+    })
+}
+
 module.exports = {
   fetchTopics,
   fetchArticleById,
   fetchAllArticles,
   fetchArticleComments,
+  insertArticleComment,
 }

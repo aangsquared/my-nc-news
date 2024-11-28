@@ -7,9 +7,10 @@ const {
   getArticleByID,
   getArticles,
   getArticleComments,
+  postArticleComment,
 } = require("./controllers/api.controller")
 
-// error handlers
+// ERROR HANDLER IMPORT
 const {
   customErrorHandler,
   serverErrorHandler,
@@ -18,11 +19,19 @@ const {
 
 app.use(express.json())
 
+//GET
+
 app.get("/api", getApi)
 app.get("/api/topics", getTopics)
 app.get("/api/articles/:article_id", getArticleByID)
 app.get("/api/articles", getArticles)
 app.get("/api/articles/:article_id/comments", getArticleComments)
+
+//POST
+
+app.post("/api/articles/:article_id/comments", postArticleComment)
+
+// ERROR HANDLERS
 
 app.all("*", (req, res) => {
   res.status(404).send({ msg: "404: Route not found" })
