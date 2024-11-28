@@ -5,6 +5,7 @@ const {
   fetchAllArticles,
   fetchArticleComments,
   insertArticleComment,
+  updateArticleVotes,
 } = require("../models/api.model")
 
 function getApi(req, res) {
@@ -63,6 +64,17 @@ function postArticleComment(req, res, next) {
     .catch(next)
 }
 
+function patchArticleVotes(req, res, next) {
+  const { article_id } = req.params
+  const { inc_votes } = req.body
+
+  updateArticleVotes(article_id, inc_votes)
+    .then((updatedArticle) => {
+      res.status(200).send({ article: updatedArticle })
+    })
+    .catch(next)
+}
+
 module.exports = {
   getApi,
   getTopics,
@@ -70,4 +82,5 @@ module.exports = {
   getArticles,
   getArticleComments,
   postArticleComment,
+  patchArticleVotes,
 }
