@@ -6,6 +6,7 @@ const {
   fetchArticleComments,
   insertArticleComment,
   updateArticleVotes,
+  deleteCommentById,
 } = require("../models/api.model")
 
 function getApi(req, res) {
@@ -75,6 +76,16 @@ function patchArticleVotes(req, res, next) {
     .catch(next)
 }
 
+function deleteComment(req, res, next) {
+  const { comment_id } = req.params
+
+  deleteCommentById(comment_id)
+    .then(() => {
+      res.status(204).send()
+    })
+    .catch(next)
+}
+
 module.exports = {
   getApi,
   getTopics,
@@ -83,4 +94,5 @@ module.exports = {
   getArticleComments,
   postArticleComment,
   patchArticleVotes,
+  deleteComment,
 }
