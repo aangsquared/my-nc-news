@@ -172,3 +172,82 @@ describe("GET /api/articles/:article_id/comments", () => {
       })
   })
 })
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: responds with a new posted comment", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "Northcoders is great.",
+    }
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            body: "Northcoders is great.",
+            article_id: 1,
+            author: "butter_bridge",
+            votes: 0,
+            created_at: expect.any(String),
+          })
+        )
+      })
+  })
+  test("400: responds with 'Bad request' when necessary fields are missing", () => {
+    const invalidComment = { username: "butter_bridge" }
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(invalidComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400: Bad request")
+      })
+  })
+  test("400: responds with 'Bad request' for invalid article_id format", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "Test comment.",
+    }
+
+    return request(app)
+      .post("/api/articles/NaN/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400: Bad request")
+      })
+  })
+  test("404: responds with 'Article not found' when posting to a invalid article_id", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "Test comment.",
+    }
+
+    return request(app)
+      .post("/api/articles/11111111/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found")
+      })
+  })
+  test("404: responds with 'User not found' when username does not exist", () => {
+    const newComment = {
+      username: "user_does_not_exist",
+      body: "Test comment.",
+    }
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not found")
+      })
+  })
+})
