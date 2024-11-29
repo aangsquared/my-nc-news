@@ -73,44 +73,6 @@ describe("GET /api/topics", () => {
   })
 })
 
-describe("GET /api/articles/:article_id", () => {
-  test("200: Responds with the correct article object with all properties", () => {
-    return request(app)
-      .get("/api/articles/1")
-      .expect(200)
-      .then(({ body: { article } }) => {
-        expect(article).toEqual(
-          expect.objectContaining({
-            author: expect.any(String),
-            title: expect.any(String),
-            article_id: 1,
-            body: expect.any(String),
-            topic: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number),
-            article_img_url: expect.any(String),
-          })
-        )
-      })
-  })
-  test("404: Responds with 'Article not found' error message for invalid article_id number", () => {
-    return request(app)
-      .get("/api/articles/1111111")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Article Not Found")
-      })
-  })
-  test("400: Responds with 'Bad request' error message for wrong article_id request format", () => {
-    return request(app)
-      .get("/api/articles/NaN")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("400: Bad request")
-      })
-  })
-})
-
 describe("GET /api/articles", () => {
   const expectedObject = {
     author: expect.any(String),
@@ -224,6 +186,65 @@ describe("GET /api/articles", () => {
         expect(body.msg).toBe("404: Route not found")
       })
   })
+})
+
+describe("GET /api/articles/:article_id", () => {
+  test("200: Responds with the correct article object with all properties", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: 1,
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          })
+        )
+      })
+  })
+})
+test("200: responds with an article and comment_count", () => {
+  return request(app)
+    .get(`/api/articles/1`)
+    .expect(200)
+    .then(({ body: { article } }) => {
+      expect(article).toEqual(
+        expect.objectContaining({
+          comment_count: expect.any(Number),
+        })
+      )
+    })
+})
+test("200: Responds with the correct comment_count for articles with no comments", () => {
+  return request(app)
+    .get("/api/articles/2")
+    .expect(200)
+    .then(({ body: { article } }) => {
+      expect(article.comment_count).toBe(0)
+    })
+})
+test("404: Responds with 'Article not found' error message for invalid article_id number", () => {
+  return request(app)
+    .get("/api/articles/1111111")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Article not found")
+    })
+})
+test("400: Responds with 'Bad request' error message for wrong article_id request format", () => {
+  return request(app)
+    .get("/api/articles/NaN")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400: Bad request")
+    })
 })
 
 describe("GET /api/articles/:article_id/comments", () => {
