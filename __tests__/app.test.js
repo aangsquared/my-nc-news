@@ -25,6 +25,14 @@ describe("GET /api", () => {
         expect(endpoints).toEqual(endpointsJson)
       })
   })
+  test("404: responds with a message 'Route not found' if given an invalid endpoint", () => {
+    return request(app)
+      .get("/api/error-right?")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("404: Route not found")
+      })
+  })
 })
 
 describe("GET /api/users", () => {
@@ -57,7 +65,7 @@ describe("GET /api/users", () => {
 })
 
 describe("GET /api/topics", () => {
-  test.only("200: Responds with array of topic objects", () => {
+  test("200: Responds with array of topic objects", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
@@ -89,11 +97,10 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles).toBeInstanceOf(Array)
         expect(articles).toHaveLength(13)
         articles.forEach((article) => {
           expect(article).toEqual(expect.objectContaining(expectedObject))
-          expect(article.body).toBe(undefined)
+          expect(article).not.toHaveProperty("body")
         })
       })
   })
@@ -102,7 +109,6 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles).toBeInstanceOf(Array)
         expect(articles).toHaveLength(13)
         articles.forEach((article) => {
           expect(article).toEqual(expect.objectContaining(expectedObject))
@@ -176,14 +182,6 @@ describe("GET /api/articles", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid order value")
-      })
-  })
-  test("404: responds with a message 'Route not found' if given an invalid endpoint", () => {
-    return request(app)
-      .get("/api/error-right?")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("404: Route not found")
       })
   })
 })
