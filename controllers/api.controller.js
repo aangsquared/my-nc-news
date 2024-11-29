@@ -31,11 +31,9 @@ function getTopics(req, res, next) {
 
 function getArticleByID(req, res, next) {
   const { article_id } = req.params
+
   fetchArticleById(article_id)
     .then((article) => {
-      if (!article) {
-        return res.status(404).send({ msg: "Article Not Found" })
-      }
       res.status(200).send({ article })
     })
     .catch(next)
