@@ -150,6 +150,16 @@ describe("GET /api/articles", () => {
         })
       })
   })
+  test("200: responds with articles filtered by topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch")
+        })
+      })
+  })
   test("200: responds with articles sorted by created_at in descending order by default", () => {
     return request(app)
       .get("/api/articles")
@@ -180,6 +190,14 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles).toBeSortedBy("title", { descending: true })
+      })
+  })
+  test("400: responds with 'Invalid topic' for an invalid topic", () => {
+    return request(app)
+      .get("/api/articles?topic=invalid_topic")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid topic")
       })
   })
   test("400: responds with 'Invalid sort column' for invalid sort_by value", () => {
