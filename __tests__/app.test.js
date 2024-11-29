@@ -57,12 +57,12 @@ describe("GET /api/users", () => {
 })
 
 describe("GET /api/topics", () => {
-  test("200: Responds with array of topic objects", () => {
+  test.only("200: Responds with array of topic objects", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
       .then(({ body: { topics } }) => {
-        expect(Array.isArray(topics)).toBe(true)
+        expect(topics).toHaveLength(3)
         topics.forEach((topic) => {
           expect(topic).toMatchObject({
             slug: expect.any(String),
