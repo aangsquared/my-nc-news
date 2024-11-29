@@ -251,7 +251,6 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
-        expect(comments).toBeInstanceOf(Array)
         expect(comments).toHaveLength(11)
         comments.forEach((comment) => {
           expect(comment).toEqual(
@@ -268,12 +267,12 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(comments).toBeSortedBy("created_at", { descending: true })
       })
   })
-  test("404: responds with 'No comments for this article' if article has no comments", () => {
+  test("200: responds with empty array if article exists and has no comments", () => {
     return request(app)
-      .get("/api/articles/11111111/comments")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("No comments for this article")
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toEqual([])
       })
   })
   test("400: responds with 'Bad request' for invalid article_id format", () => {

@@ -102,7 +102,29 @@ function fetchAllArticles(sort_by = "created_at", order = "desc", topic) {
 }
 
 function fetchArticleComments(article_id) {
-  const queryString = `
+  return db
+    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Article not found" })
+      }
+
+      return db.query(
+        `
+      SELECT 
+        comment_id, votes, created_at, author, body, article_id 
+      FROM comments 
+      WHERE article_id = $1
+      ORDER BY created_at DESC;`,
+        [article_id]
+      )
+    })
+    .then(({ rows }) => {
+      return rows
+    })
+}
+
+/* const queryString = `
     SELECT comment_id, votes, created_at, author, body, article_id
     FROM comments
     WHERE article_id = $1
@@ -111,8 +133,7 @@ function fetchArticleComments(article_id) {
 
   return db.query(queryString, [article_id]).then(({ rows }) => {
     return rows
-  })
-}
+  }) */
 
 function insertArticleComment(article_id, username, body) {
   const queryString = `INSERT INTO comments (article_id, author, body)
