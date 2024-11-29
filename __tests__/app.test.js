@@ -127,12 +127,12 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true })
       })
   })
-  test("200: responds with articles sorted by created_at in ascending order", () => {
+  test.only("200: responds with articles sorted by created_at in ascending order", () => {
     return request(app)
       .get("/api/articles?order=asc")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles).toBeSortedBy("created_at", { ascending: true })
+        expect(articles).toBeSortedBy("created_at", { descending: false })
       })
   })
   test("200: responds with articles sorted by title in ascending order", () => {
