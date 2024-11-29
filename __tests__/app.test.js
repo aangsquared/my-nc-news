@@ -374,7 +374,7 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.article).toEqual(
           expect.objectContaining({
             article_id: 1,
-            votes: expect.any(Number),
+            votes: 101,
             title: expect.any(String),
             author: expect.any(String),
             body: expect.any(String),
@@ -383,7 +383,6 @@ describe("PATCH /api/articles/:article_id", () => {
             article_img_url: expect.any(String),
           })
         )
-        expect(body.article.votes).toBe(101)
       })
   })
 
