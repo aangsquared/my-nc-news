@@ -53,9 +53,6 @@ function getArticleComments(req, res, next) {
 
   fetchArticleComments(article_id)
     .then((comments) => {
-      if (!comments.length) {
-        res.status(404).send({ msg: "No comments for this article" })
-      }
       res.status(200).send({ comments })
     })
     .catch(next)
