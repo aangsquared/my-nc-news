@@ -20,7 +20,7 @@ function fetchArticleById(article_id) {
   })
 }
 
-function fetchAllArticles(sort_by = "created_at", order = "desc") {
+function fetchAllArticles(sort_by = "created_at", order = "desc", topic) {
   const validSortBy = [
     "author",
     "title",
@@ -32,6 +32,8 @@ function fetchAllArticles(sort_by = "created_at", order = "desc") {
     "comment_count",
   ]
 
+  const validTopics = ["mitch", "cats", "paper"]
+
   if (!validSortBy.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Invalid sort column" })
   }
@@ -40,23 +42,35 @@ function fetchAllArticles(sort_by = "created_at", order = "desc") {
     return Promise.reject({ status: 400, msg: "Invalid order value" })
   }
 
-  const queryString = `
-      SELECT
-        articles.author, 
-        articles.title, 
-        articles.article_id, 
-        articles.topic, 
-        articles.created_at, 
-        articles.votes, 
-        articles.article_img_url,
-        COUNT(comments.comment_id) AS comment_count
-      FROM articles
-      LEFT JOIN comments
-        ON articles.article_id = comments.article_id
-      GROUP BY articles.article_id
-      ORDER BY ${sort_by} ${order}`
+  if (topic && !validTopics.includes(topic)) {
+    return Promise.reject({ status: 400, msg: "Invalid topic" })
+  }
 
-  return db.query(queryString).then(({ rows }) => {
+  let queryString = `
+    SELECT
+      articles.author, 
+      articles.title, 
+      articles.article_id, 
+      articles.topic, 
+      articles.created_at, 
+      articles.votes, 
+      articles.article_img_url,
+      COUNT(comments.comment_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments
+      ON articles.article_id = comments.article_id`
+
+  const queryTopic = (topic && [topic]) || []
+
+  if (topic) {
+    queryString += ` WHERE articles.topic = $1`
+  }
+
+  queryString += `
+  GROUP BY articles.article_id 
+  ORDER BY ${sort_by} ${order};`
+
+  return db.query(queryString, queryTopic).then(({ rows }) => {
     return rows.map((article) => ({
       ...article,
       comment_count: Number(article.comment_count),
